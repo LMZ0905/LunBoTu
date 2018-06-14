@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>轮播图</title>
+    <style>
+    #scroll{
+        width: 600px;
+        height: 500px;
+        border: 1px solid red;
+        margin: 20px auto;
+        box-sizing: border-box;
+        overflow: hidden;
+        position: relative;
+    }
+    #scroll>div{
+        display: inline-block;
+        width: 100%;height: 100%;
+        font-size: 50px;
+        font-weight: bolder;
+        text-align: center;
+        line-height: 500px;
+        box-sizing: border-box;
+        position: absolute;
+        transition:left 0.7s ease-in-out;
+    } 
+    #scroll>div:nth-child(1){
+        background-color: cyan;
+    }
+    #scroll>div:nth-child(2){
+        background-color:orange;
+    }
+    #scroll>div:nth-child(3){
+        background-color: blue;
+    }
+    #scroll>div:nth-child(4){
+        background-color: purple;
+    }
+    #scroll>div:nth-child(5){
+        background-color: rgb(208, 255, 0);
+    }
+    #scroll>div:nth-child(6){
+        background-color: rgb(128, 0, 43);
+    }
+    #scroll>div:nth-child(7){
+        background-color:rgb(255, 38, 0);
+    }
+    #scroll>div:nth-child(8){
+        background-color:cyan;
+    }
+    .arrow{
+        width: 60px!important;
+        height: 100%;
+        font-size: 40px;
+        text-align: center;
+        line-height:500px;
+        color: red;
+        cursor: pointer;
+        position: absolute;
+    }
+    </style>
+</head>
+<body>
+    <!-- 1.轮播图 要点一 就是做后一张也是第一张  用最后一张来替换替换第一张 是循环的时候不会出现卡顿的效果，肉眼来看不出来-->
+    <div id="scroll">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+        <div>7</div>
+        <div>1</div>
+    </div>
+</body>
+<script>
+    function $(arg){
+        var obj=document.querySelector(arg);    //查询
+        if(obj){
+            return obj;
+        }else{
+            return null;
+        }
+       
+    }
+
+    // var scroll_el=document.querySelector('#scroll');
+    var sWidth=$('#scroll').clientWidth;
+    // 初始化
+    var imgs= $('#scroll').querySelectorAll('div');
+    for(var i=0;i<imgs.length;i++){
+        imgs[i].style.left= i*sWidth+'px';
+    }
+
+    function move(){
+        //1. 移动
+        for(var i=0;i<imgs.length;i++){
+        imgs[i].style.left= (i-page+1)*sWidth+'px';
+        }
+        // 2.要对最后一页做处理
+        setTimeout(function(){
+            if(page == imgs.length){
+                page=1; //让页码变为1页
+
+                for(var i=0;i<imgs.length;i++){
+                        imgs[i].style.transition='none';
+                }
+
+                for(i=0;i<imgs.length;i++){
+                        imgs[i].style.left=i*sWidth+'px';
+                }
+
+                setTimeout(function(){ //加setimeout让有个缓存时间 等全部回到原位再添加动画
+                        for(var i=0;i<imgs.length;i++){
+                            imgs[i].style.transition='left 0.7s ease-in-out';
+                        }
+                },100);
+            }
+        },700)
+    }
+
+    function moveLeft(){
+        page++;
+        if(page>imgs.length){
+            page=imgs.length;
+        }
+        move();
+    }
+
+    var page=1;
+    var timer= setInterval(moveLeft,1000);
+
+    // 2.在定时基础上又翻页功能
+    var  lbtn =  document.createElement('div');
+    lbtn.innerHTML='《';
+    lbtn.classList.add('arrow');
+    lbtn.style.background='linear-gradient(to right,rgba(0,0,0,0.5),rgba(0,0,0,0))';
+    lbtn.style.left='0';
+    $('#scroll').appendChild(lbtn);
+
+    var  rbtn =  document.createElement('div');
+    rbtn.innerHTML='》';
+    rbtn.classList.add('arrow');
+    rbtn.style.background='linear-gradient(to left,rgba(0,0,0,0.5),rgba(0,0,0,0))';
+    rbtn.style.right='0';
+    $('#scroll').appendChild(rbtn);
+
+    lbtn.addEventListener('click',function(){
+            clearInterval(timer);
+            moveLeft();
+            timer=setInterval(moveLeft,2000)
+    });
+
+    rbtn.addEventListener('click',function(){
+            clearInterval(timer)
+            moveRight();
+            timer=setInterval(moveLeft,2000)
+    });
+
+    function moveRight(){
+        page--;
+        if(page<1){
+            page=1;
+        }
+        move();
+    }
+</script>
+</html>
